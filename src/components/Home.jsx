@@ -1,13 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import AccordionTask from "./AccordionTask";
 import AppLayout from './AppLayout';
 import Container from '@mui/material/Container';
-import i18n from '../i18n';
 
 const Home = () => {
+    const {t}=useTranslation();
+
     return (
         <>
-            <AppLayout title={i18n.appTitle} />
+            <AppLayout title={t('TODO APP')} />
             <Container maxWidth="sm">
                 <AccordionTask />
             </Container>

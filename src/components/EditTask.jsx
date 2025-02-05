@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next';
 import AppLayout from './AppLayout';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { useNavigate } from 'react-router-dom';
-import cardData from './dummy';
 import { useParams } from 'react-router-dom';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { statusTypes, validateForm} from '../helpers';
+import { statusTypes, validateForm } from '../helpers';
 import { CircleIconWrapper, ListItemTextWrapper, ContainerWrapper } from './style';
 import Alert from '@mui/material/Alert';
 import CheckIcon from '@mui/icons-material/Check';
-import i18n from '../i18n';
-
+import { editTask } from '../store';
 
 const EditTask = () => {
     const [errors, setErrors] = useState({});
@@ -21,11 +21,14 @@ const EditTask = () => {
     const navigate = useNavigate();
     const { id, statusId } = useParams();
     const [formData, setFormData] = useState({ title: '', description: '', status: '' });
+    const tasks = useSelector((state) => state.task.taskList);
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
 
     useEffect(() => {
-        const data = cardData.filter((item) => item.id === Number(id));
-        setFormData({ title: data[0].title, description: data[0].content, status: statusId });
-    }, [id, statusId])
+        const data = tasks?.filter((item) => item.id === id);
+        setFormData({ id: data[0].id, title: data[0].title, description: data[0].description, status: statusId });
+    }, [id, statusId, tasks])
 
 
     const handleInputChange = (e) => {
@@ -43,14 +46,11 @@ const EditTask = () => {
             // Form is valid, you can submit or process the data here
             console.log("Form data submitted :", formData);
             setSubmitted(true); // Set a submitted flag
-
-            // Call API to save the tasks then redirect user to listing page.
+            dispatch(editTask(formData));
 
             setTimeout(function () {
                 navigate('/');
             }, 1000);
-        } else {
-            // Form is not valid, display error messages
         }
     };
 
@@ -58,23 +58,22 @@ const EditTask = () => {
         navigate('/');
     };
 
-
     const isFormValid = Object.keys(errors).length === 0;
 
     return (
         <>
-            <AppLayout title={i18n.editTaskTitle} goToPage={'/'} />
+            <AppLayout title={t('Edit Task')} goToPage={'/'} />
             <ContainerWrapper maxWidth="sm">
-                {submitted && <Alert icon={<CheckIcon fontSize="inherit" />} severity="success"> {i18n.updateSuccessMsg} </Alert>}
+                {submitted && <Alert icon={<CheckIcon fontSize="inherit" />} severity="success"> {t('Task Updated Successfully!')} </Alert>}
 
                 <form noValidate onSubmit={handleSubmit}>
-                    <TextField fullWidth margin='normal' placeholder={i18n.titlePlaceholderText} required
+                    <TextField fullWidth margin='normal' placeholder={t('Enter the title')} required
                         name='title'
                         value={formData.title}
                         onChange={handleInputChange}
                         error={errors.title} />
 
-                    <TextField fullWidth margin='normal' placeholder={i18n.descriptionPlaceholderText}
+                    <TextField fullWidth margin='normal' placeholder={t('Enter the description')}
                         name='description'
                         rows={4} multiline required value={formData.description}
                         error={errors.description}
@@ -90,7 +89,7 @@ const EditTask = () => {
                         style={{ textAlign: 'left', }}
                         onChange={handleInputChange}
                     >
-                        {statusTypes && Object.keys(statusTypes).map((item, index) =>
+                        {Object.keys(statusTypes).map((_, index) =>
                             <MenuItem value={index}>
                                 <CircleIconWrapper statusId={index} fontSize='5' />
                                 {' '} <ListItemTextWrapper primary={statusTypes[index]} />
@@ -104,8 +103,8 @@ const EditTask = () => {
                         justifyContent: "space-between",
                         alignItems: "flex-start", margin: '20px',
                     }}>
-                        <Button variant="outlined" onClick={handleCancel}>{i18n.cancelBtnLabel}</Button>
-                        <Button variant="contained" disabled={!isFormValid} type="submit">{i18n.updateBtnLabel}</Button>
+                        <Button variant="outlined" onClick={handleCancel}>{t('Cancel')}</Button>
+                        <Button variant="contained" disabled={!isFormValid} type="submit">{t('Update')}</Button>
                     </Stack>
                 </form>
             </ContainerWrapper>

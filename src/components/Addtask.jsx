@@ -1,32 +1,37 @@
 import React, { useState, useId } from 'react';
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next';
 import AppLayout from './AppLayout';
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { validateForm } from '../helpers';
+import { validateForm, getCurrentDate } from '../helpers';
 import { useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import CheckIcon from '@mui/icons-material/Check';
 import { addTask } from '../store';
-import i18n from '../i18n';
 
 const AddTask = () => {
     const taskId = useId();
-    const [formData, setFormData] = useState({ id: taskId, title: '', description: '', date: 'Wed 31, July 2024', status: 0 });
+    const currentDate = getCurrentDate();
+    const [formData, setFormData] = useState({ id: taskId, title: '', description: '', date: currentDate, status: '0' });
     const [errors, setErrors] = useState({});
     const [submitted, setSubmitted] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { t } = useTranslation();
 
     const handleInputChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
+        setFormData(prevState => {
+            const updatedFormData = {
+                ...prevState,
+                [e.target.name]: e.target.value
+            };
+            validateForm(updatedFormData, setErrors);
+            return updatedFormData;
         });
-        validateForm(formData, setErrors);
-    };
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -36,16 +41,13 @@ const AddTask = () => {
             console.log("Form data submitted :", formData);
             setSubmitted(true); // Set a submitted flag
 
-            // Call API to save the tasks then redirect user to listing page.
             dispatch(addTask(formData));
 
             setTimeout(function () {
                 navigate('/');
             }, 1000);
-        } else {
-            // Form is not valid, display error messages
         }
-    };
+    }
 
     const handleCancel = () => {
         navigate('/');
@@ -55,28 +57,30 @@ const AddTask = () => {
 
     return (
         <>
-            <AppLayout title={i18n.addTaskTitle} goToPage={'/'} sx={{ mb: '10' }} />
+            <AppLayout title={t('Add Task')} goToPage={'/'} sx={{ mb: '10' }} />
             <Container maxWidth="sm" >
-                {submitted && <Alert icon={<CheckIcon fontSize="inherit" />} severity="success" onClose={() => { }}> {i18n.saveSuccessMsg}</Alert>}
+                {submitted && <Alert icon={<CheckIcon fontSize="inherit" />} severity="success"> {t('Task Added Successfully!')}</Alert>}
 
                 <form noValidate onSubmit={handleSubmit}>
-                    <TextField fullWidth margin='normal' placeholder={i18n.titlePlaceholderText} required
+                    <TextField fullWidth margin='normal' placeholder={t('Enter the title')} required
                         name='title'
                         onChange={handleInputChange}
-                        error={errors.title} />
+                        helperText={errors.title}
+                        error={!!errors.title} />
 
-                    <TextField fullWidth margin='normal' placeholder={i18n.descriptionPlaceholderText}
+                    <TextField fullWidth margin='normal' placeholder={t('Enter the description')}
                         name='description'
                         rows={4} multiline required value={formData.description}
-                        error={errors.description}
+                        error={!!errors.description}
+                        helperText={errors.description}
                         onChange={handleInputChange} />
 
                     <Stack direction="row" spacing={2} sx={{
                         justifyContent: "space-between",
                         alignItems: "flex-start", margin: '20px',
                     }}>
-                        <Button variant="outlined" onClick={handleCancel}>{i18n.cancelBtnLabel}</Button>
-                        <Button variant="contained" disabled={!isFormValid} type="submit">{i18n.addBtnLabel}</Button>
+                        <Button variant="outlined" onClick={handleCancel}>{t('Cancel')}</Button>
+                        <Button variant="contained" disabled={!isFormValid} type="submit">{t('Add')}</Button>
                     </Stack>
                 </form>
             </Container>

@@ -13,20 +13,18 @@ export const taskSlice = createSlice({
             // doesn't actually mutate the state because it uses the Immer library,
             // which detects changes to a "draft state" and produces a brand new
             // immutable state based off those changes
-            state?.taskList.push(action.payload);
+            state.taskList.push(action.payload);
         },
         editTask: (state, action) => {
-            const { id, title, description } = action.payload;
+            const { id, title, description, status } = action.payload;
+            const taskIndex = state?.taskList.findIndex((task) => task.id === id);
 
-            state?.taskList.map((task) => {
-                if (task.id === id) {
-                    return { title, description };
-                }
-                return task;
-            });
+            if (taskIndex >= 0) {
+                state.taskList[taskIndex] = { ...state.taskList[taskIndex], title, description, status };
+            }
         },
         deleteTask: (state, action) => {
-            state?.taskList.filter((task) => task.id !== action.id);
+            state.taskList = state.taskList.filter((task) => task.id !== action.payload);
         },
     },
 })

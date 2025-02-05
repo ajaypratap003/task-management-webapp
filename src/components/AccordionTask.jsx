@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, useDeferredValue } from 'react';
 import { useSelector } from 'react-redux';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -10,7 +10,7 @@ import Fab from '@mui/material/Fab';
 import { styled as styledMui } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
-import { statusTypes, filterDataByType } from '../helpers';
+import { statusTypes, groupTasksByType } from '../helpers';
 import SearchBarTask from './SearchBarTask';
 
 const StyledFab = styledMui(Fab)({
@@ -23,21 +23,37 @@ const StyledFab = styledMui(Fab)({
 
 const AccordionTask = () => {
     const tasks = useSelector((state) => state.task.taskList)
-    console.log('tasks ', tasks);
+    const [query, setQuery] = useState("");
+    const deferredValue=useDeferredValue(query);
     const navigate = useNavigate();
+    const [filteredTasks, setFilteredTasks] = useState([]);
+
     const handleAddTask = () => {
         navigate('/add-task');
     };
 
-    // Fetch API will be called inside useEffect to get the data from server. For this app used Mock Data
-    const data = filterDataByType(tasks);
+    useEffect(() => {
+        if (deferredValue === "" || deferredValue === undefined) {
+            setFilteredTasks(tasks);
+        } else {
+            const filteredResults = tasks.filter((task) => statusTypes[task.status]?.toLowerCase() === deferredValue?.toLowerCase());
+            setFilteredTasks(filteredResults);
+        }
+    }, [tasks, deferredValue]);
+
+    const handleSearchQuery = (query) => {
+        setQuery(query);
+    }
+
+    // Group tasks based on status type
+    const data = groupTasksByType(filteredTasks);
 
     return (
         <>
-            <SearchBarTask list={tasks} />
-            {data && data.map((item, index) => {
+            <SearchBarTask onChange={handleSearchQuery} />
+            {data?.map((item) => {
                 return (
-                    <Accordion key={index} >
+                    <Accordion key={item[0]} >
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-controls="panel1a-content"
@@ -49,13 +65,13 @@ const AccordionTask = () => {
                             <Typography>{statusTypes[item[0]]} ({item[1].length})</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Cards status={item[0]} data={item[1]} key={item.id} />
+                            <Cards status={item[0]} data={item[1]} />
                         </AccordionDetails>
                     </Accordion>
                 );
             })}
-            <StyledFab color="secondary" aria-label="add">
-                <AddIcon onClick={handleAddTask} />
+            <StyledFab color="secondary" aria-label="add" onClick={handleAddTask}>
+                <AddIcon />
             </StyledFab>
         </>
     );

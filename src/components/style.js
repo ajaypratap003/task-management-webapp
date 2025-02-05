@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import CircleIcon from '@mui/icons-material/Circle';
 import Avatar from '@mui/material/Avatar';
-import { statusTypes} from '../helpers';
+import { statusTypes } from '../helpers';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 import Container from '@mui/material/Container';
@@ -29,13 +29,15 @@ const CircleIconWrapper = styled(CircleIcon)`
     }
 `;
 
-const ActionsWrapper=styled.div`
+const ActionsWrapper = styled.div`
   display: flex;
   flex-display: row;
   gap: 10px;
 `;
 
 const NameWrapper = styled.div`
+display: flex;
+flex-display: row;
     width: auto;
     color: #034EA2;
 `;
@@ -54,6 +56,7 @@ const TodoIcon = styled(Avatar)`
 const ContentWrapper = styled(Typography)`
     color: #231F20;
     display: 'block'
+    max-width: 200px;
 `;
 
 const DateTimeWrapper = styled(Typography)`

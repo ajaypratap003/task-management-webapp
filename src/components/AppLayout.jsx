@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -7,6 +7,13 @@ import Toolbar from '@mui/material/Toolbar';
 import { useNavigate } from 'react-router-dom';
 import { Config } from '../helpers';
 
+/**
+ * AppLayout component renders the application layout with an AppBar.
+ * 
+ * @param {Object} props - The component props.
+ * @param {string} props.title - The title to be displayed in the AppBar.
+ * @param {string} props.goToPage - The page to navigate to when the back arrow is clicked.
+ */
 const AppLayout = ({ title, goToPage }) => {
     const { pathname } = useLocation();
     const navigate = useNavigate();

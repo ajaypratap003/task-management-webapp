@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux'
 import List from '@mui/material/List';
 import { listItemClasses } from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
@@ -8,20 +9,21 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForever from '@mui/icons-material/DeleteForever';
-import { CircleIconWrapper, StatusSection, NameWrapper, ContentWrapper, DateTimeWrapper, ListItemWrapper, ActionsWrapper } from './style';
+import { CircleIconWrapper, StatusSection, NameWrapper, ContentWrapper, DateTimeWrapper, ListItemWrapper } from './style';
 import { useNavigate } from 'react-router-dom';
 import { statusTypes } from '../helpers';
+import { deleteTask } from '../store';
 
-const Card = ({ item, index, status }) => {
+const TaskCard = ({ item, index, status }) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleEdit = (item, status) => {
-        console.log('edit ', item);
         navigate(`/task/${item.id}/${status}`);
     };
 
-    const handleDelete=()=>{
-
+    const handleDelete = (id) => {
+        dispatch(deleteTask(id));
     }
 
     return (
@@ -36,7 +38,7 @@ const Card = ({ item, index, status }) => {
                 </ListItemAvatar>
                 <ListItemText
                     primary={
-                        <NameWrapper>{item.title}
+                        <NameWrapper sx={{ overflowWrap: 'break-word' }}>{item.title}
                             <StatusSection>
                                 <Typography variant="caption" align="right">
                                     <CircleIconWrapper statusId={status} fontSize='10' />
@@ -47,17 +49,16 @@ const Card = ({ item, index, status }) => {
                     }
                     secondary={
                         <>
-                            <ContentWrapper variant="caption" gutterBottom sx={{ display: 'block' }}>{item.description}</ContentWrapper>
+                            <ContentWrapper variant="caption" gutterBottom sx={{ display: 'block', overflowWrap: 'break-word' }}>{item.description}</ContentWrapper>
                             <DateTimeWrapper variant="caption" gutterBottom sx={{ display: 'block' }}>{item.date}
-                                <DeleteForever color='error' style={{ float: 'right', cursor: 'pointer', marginLeft: '5px' }} fontSize='small' onClick={() => handleEdit(item, status)}></DeleteForever>
-                                <EditIcon color='primary' style={{ float: 'right', cursor: 'pointer' }} fontSize='small' onClick={() => handleDelete(item.id)}></EditIcon>
+                                <DeleteForever color='error' style={{ float: 'right', cursor: 'pointer', marginLeft: '5px' }} fontSize='small' onClick={() => handleDelete(item.id)}></DeleteForever>
+                                <EditIcon color='primary' style={{ float: 'right', cursor: 'pointer' }} fontSize='small' onClick={() => handleEdit(item, status)}></EditIcon>
                             </DateTimeWrapper>
                         </>
                     }
                 />
-
             </ListItemWrapper>
-            {index === 0 && <Divider variant="inset" component="li" />}
+           <Divider variant="inset" component="li" />
         </>
     );
 }
@@ -65,8 +66,8 @@ const Card = ({ item, index, status }) => {
 
 const Cards = ({ status, data }) => {
     return (
-        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', }} >
-            {data && data.map((item, index) => <Card item={item} index={index} status={status} key={item.id} />)}
+        <List sx={{ width: '100%', maxWidth: 500, bgcolor: 'background.paper', }} >
+            {data && data.map((item, index) => <TaskCard item={item} index={index} status={status} key={item.id} />)}
         </List>
     )
 };

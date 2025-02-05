@@ -2,6 +2,14 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Features
+1. Search task by status
+2. Add task
+3. Edit task
+4. Delete task
+5. Persist data on page reload/fresh 
+6. Internationalization (i18n)
+
 ## Available Scripts
 
 In the project directory, you can run:

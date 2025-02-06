@@ -5,7 +5,7 @@ import { listItemClasses } from '@mui/material/ListItem';
 import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
+import AddCircle from '@mui/icons-material/AddCircle';
 import Typography from '@mui/material/Typography';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForever from '@mui/icons-material/DeleteForever';
@@ -34,7 +34,7 @@ const TaskCard = ({ item, index, status }) => {
                 }
             }}>
                 <ListItemAvatar>
-                    <Avatar alt="L" src={item.img} />
+                    <AddCircle />
                 </ListItemAvatar>
                 <ListItemText
                     primary={
@@ -58,7 +58,7 @@ const TaskCard = ({ item, index, status }) => {
                     }
                 />
             </ListItemWrapper>
-           <Divider variant="inset" component="li" />
+            <Divider variant="inset" component="li" />
         </>
     );
 }
